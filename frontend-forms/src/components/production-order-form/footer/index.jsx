@@ -10,11 +10,15 @@ const ProductionOrderFooter = () => {
   );
 
   const save = async () => {
-    await create(productionOrderForm);
-    setProductionOrderForm({
-      client: "",
-      rooms: [],
-    });
+    try {
+      await create(productionOrderForm);
+      setProductionOrderForm({
+        client: "",
+        rooms: [],
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

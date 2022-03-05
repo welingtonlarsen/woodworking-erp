@@ -31,14 +31,10 @@ const parseToJsonRequest = (productionOrder) => {
 };
 
 const create = async (productionOrder) => {
-  try {
-    await axios.post(
-      "http://localhost:8080/productionorder",
-      parseToJsonRequest(productionOrder)
-    );
-  } catch (error) {
-    console.log(error);
-  }
+  await axios.post(
+    "http://localhost:3005/productionorder",
+    parseToJsonRequest(productionOrder)
+  );
 };
 
 export { create };

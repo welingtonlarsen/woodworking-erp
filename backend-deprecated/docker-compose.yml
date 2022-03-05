@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  mysql-database:
+    container_name: "mysql-woodworkerp"
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+      MYSQL_DATABASE: "woodworkerp"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
