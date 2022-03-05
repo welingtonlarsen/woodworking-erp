@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ProductionOrderInfo } from './dto/response/productionorderinfo.response.dto';
 import { Client } from './model/client.model';
 import { Forniture } from './model/forniture.model';
 import { ProductionOrder } from './model/productionorder.model';
@@ -50,5 +51,35 @@ export class ProductionOrderService {
         );
       });
     });
+  }
+
+  public async getAll(): Promise<ProductionOrderInfo[]> {
+    const productionOrders = await this.productionOrderRepository.find({
+      relations: ['client', 'rooms', 'rooms.fornitures'],
+    });
+
+    const productionOrderInfos = productionOrders.map((productionOrder) => {
+      const productionOrderId = productionOrder.id;
+      const clientName = productionOrder.client.name;
+      const ambientsQuantity = productionOrder.rooms.length;
+      const fornituresQuantity = productionOrder.rooms.reduce(
+        (fornituresQuantity, room) =>
+          fornituresQuantity + room.fornitures.length,
+        0,
+      );
+      const productionStartDate = new Date().valueOf();
+      const deadlineDate = new Date().valueOf();
+
+      return new ProductionOrderInfo(
+        productionOrderId,
+        clientName,
+        ambientsQuantity,
+        fornituresQuantity,
+        productionStartDate,
+        deadlineDate,
+      );
+    });
+
+    return productionOrderInfos;
   }
 }

@@ -1,8 +1,5 @@
-import {
-  Body,
-  Controller,
-  Post
-} from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ProductionOrderInfo } from './dto/response/productionorderinfo.response.dto';
 import { ProductionOrderDTO } from './productionorder.dto';
 import { ProductionOrderService } from './productionorder.service';
 
@@ -13,5 +10,10 @@ export class ProductionOrderController {
   @Post()
   public create(@Body() productionOrder: ProductionOrderDTO) {
     this.productionOrderService.create(productionOrder);
+  }
+
+  @Get()
+  public async getAll(): Promise<ProductionOrderInfo[]> {
+    return await this.productionOrderService.getAll();
   }
 }
