@@ -4,15 +4,14 @@ import moment from "moment";
 const parseToJsonRequest = (productionOrder) => {
   const rooms = productionOrder.rooms.map((room) => {
     const fornitures = room.fornitures.map((forniture) => {
+      console.log(forniture.forecast.valueOf());
       return {
         name: forniture.name,
-        productionStart: moment(new Date(forniture.productionStart)).format(
-          "YYYY-MM-DD"
-        ),
+        productionStart: forniture.productionStart.valueOf(),
         containsPurchaseOrder: forniture.containsPurchaseOrder,
-        forecast: moment(new Date(forniture.forecast)).format("YYYY-MM-DD"),
+        forecast: forniture.forecast.valueOf(),
         woodWorker: forniture.woodWorker,
-        deadline: moment(new Date(forniture.deadline)).format("YYYY-MM-DD"),
+        deadline: forniture.deadline.valueOf(),
       };
     });
 
@@ -26,15 +25,18 @@ const parseToJsonRequest = (productionOrder) => {
     client: {
       name: productionOrder.client,
     },
+    start: new Date().valueOf(),
+    deadline: new Date().valueOf(),
     rooms: rooms,
   };
 };
 
 const create = async (productionOrder) => {
-  await axios.post(
-    "http://localhost:3005/productionorder",
-    parseToJsonRequest(productionOrder)
-  );
+  await axios.post("http://localhost:3005/productionorder", parseToJsonRequest(productionOrder));
 };
 
-export { create };
+const getAll = async () => {
+  return axios.get("http://localhost:3005/productionorder");
+};
+
+export { create, getAll };

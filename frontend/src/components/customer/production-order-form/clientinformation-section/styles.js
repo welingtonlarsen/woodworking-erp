@@ -1,6 +1,6 @@
 export const styles = () => ({
   clientNameInput: {
-    maxWidth: "600px",
+    maxWidth: "785px",
   },
   divider: {
     marginTop: "20px",

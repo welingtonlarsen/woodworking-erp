@@ -1,12 +1,14 @@
 import {
   IsBoolean,
   IsDate,
+  IsNotEmpty,
+  IsNumber,
   IsObject,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import * as moment from 'moment';
+// import * as moment from 'moment';
 
 class ClientDTO {
   @IsString()
@@ -17,6 +19,14 @@ export class ProductionOrderDTO {
   @IsObject()
   @Type(() => ClientDTO)
   readonly client: ClientDTO;
+
+  @Transform((date) => new Date(date.value))
+  @IsNotEmpty()
+  readonly start: Date
+
+  @Transform((date) => new Date(date.value))
+  @IsNotEmpty()
+  readonly deadline: Date
 
   @ValidateNested({ each: true })
   @Type(() => RoomDTO)
@@ -36,21 +46,21 @@ export class FornitureDTO {
   @IsString()
   name: string;
 
-  @Transform((date) => moment(date.value, 'YYYY-MM-DD').toDate())
-  @IsDate()
+  @Transform((date) => new Date(date.value))
+  @IsNotEmpty()
   productionStart: Date;
 
   @IsBoolean()
   containsPurchaseOrder: boolean;
 
-  @Transform((date) => moment(date.value, 'YYYY-MM-DD').toDate())
-  @IsDate()
+  @Transform((date) => new Date(date.value))
+  @IsNotEmpty()
   forecast: Date;
 
   @IsString()
   woodWorker: string;
 
-  @Transform((date) => moment(date.value, 'YYYY-MM-DD').toDate())
-  @IsDate()
+  @Transform((date) => new Date(date.value))
+  @IsNotEmpty()
   deadline: Date;
 }

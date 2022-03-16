@@ -16,22 +16,26 @@ import {
   Typography,
   LinearProgress,
 } from "@mui/material";
-import { getInitials } from "../../utils/get-initials";
+import { getAll } from "../../services/production-order-service";
+import { useRouter } from "next/router";
 
 export const CustomerListResults = ({ customers, ...rest }) => {
+  const router = useRouter();
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const [productionOrders, setProductionOrders] = useState([]);
 
-  useEffect(() => {
-    console.log(selectedCustomerIds);
-  }, [selectedCustomerIds]);
+  useEffect(async () => {
+    const response = await getAll();
+    setProductionOrders(response.data);
+  }, []);
 
   const handleSelectAll = (event) => {
     let newSelectedCustomerIds;
 
     if (event.target.checked) {
-      newSelectedCustomerIds = customers.map((customer) => customer.id);
+      newSelectedCustomerIds = productionOrders.map((productionOrder) => productionOrder.id);
     } else {
       newSelectedCustomerIds = [];
     }
@@ -67,6 +71,8 @@ export const CustomerListResults = ({ customers, ...rest }) => {
     setPage(newPage);
   };
 
+  const pushToProductionOrderDetails = () => router.push("/production-order-form");
+
   return (
     <Card {...rest}>
       <PerfectScrollbar>
@@ -76,11 +82,11 @@ export const CustomerListResults = ({ customers, ...rest }) => {
               <TableRow>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={selectedCustomerIds.length === customers.length}
+                    checked={selectedCustomerIds.length === productionOrders.length}
                     color="primary"
                     indeterminate={
                       selectedCustomerIds.length > 0 &&
-                      selectedCustomerIds.length < customers.length
+                      selectedCustomerIds.length < productionOrders.length
                     }
                     onChange={handleSelectAll}
                   />
@@ -94,20 +100,22 @@ export const CustomerListResults = ({ customers, ...rest }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {customers.slice(0, limit).map((customer) => (
+              {productionOrders.slice(0, limit).map((productionOrder) => (
                 <TableRow
+                  style={{ cursor: "pointer" }}
+                  //onClick={(event) => console.log(productionOrder)}
                   hover
-                  key={customer.id}
-                  selected={selectedCustomerIds.indexOf(customer.id) !== -1}
+                  key={productionOrder.id}
+                  selected={selectedCustomerIds.indexOf(productionOrder.id) !== -1}
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
-                      checked={selectedCustomerIds.indexOf(customer.id) !== -1}
-                      onChange={(event) => handleSelectOne(event, customer.id)}
+                      checked={selectedCustomerIds.indexOf(productionOrder.id) !== -1}
+                      onChange={(event) => handleSelectOne(event, productionOrder.id)}
                       value="true"
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={pushToProductionOrderDetails}>
                     <Box
                       sx={{
                         alignItems: "center",
@@ -115,16 +123,28 @@ export const CustomerListResults = ({ customers, ...rest }) => {
                       }}
                     >
                       <Typography color="textPrimary" variant="body1">
-                        {customer.name}
+                        {productionOrder.clientName}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{customer.ambientsQuantity}</TableCell>
-                  <TableCell>{customer.fornituresQuantity}</TableCell>
-                  <TableCell>{customer.productionStart}</TableCell>
-                  <TableCell>{format(customer.deadline, "dd/MM/yyyy")}</TableCell>
-                  <TableCell>
-                    <LinearProgress sx={{width: 100}} variant="determinate" value={70} />
+                  <TableCell onClick={pushToProductionOrderDetails}>
+                    {productionOrder.ambientsQuantity}
+                  </TableCell>
+                  <TableCell onClick={pushToProductionOrderDetails}>
+                    {productionOrder.fornituresQuantity}
+                  </TableCell>
+                  <TableCell onClick={pushToProductionOrderDetails}>
+                    {format(productionOrder.productionStartDate, "dd/MM/yyyy")}
+                  </TableCell>
+                  <TableCell onClick={pushToProductionOrderDetails}>
+                    {format(productionOrder.deadlineDate, "dd/MM/yyyy")}
+                  </TableCell>
+                  <TableCell onClick={pushToProductionOrderDetails}>
+                    <LinearProgress
+                      sx={{ width: 100 }}
+                      variant="determinate"
+                      value={productionOrder.purchaseOrderProgress}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -134,7 +154,7 @@ export const CustomerListResults = ({ customers, ...rest }) => {
       </PerfectScrollbar>
       <TablePagination
         component="div"
-        count={customers.length}
+        count={productionOrders.length}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleLimitChange}
         page={page}
@@ -146,5 +166,5 @@ export const CustomerListResults = ({ customers, ...rest }) => {
 };
 
 CustomerListResults.propTypes = {
-  customers: PropTypes.array.isRequired,
+  productionOrders: PropTypes.array.isRequired,
 };

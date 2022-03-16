@@ -5,6 +5,8 @@ export const ProductionOrderFormContext = React.createContext([{}, () => {}]);
 export const ProductionOrderFormProvider = ({ children }) => {
   const [productionOrderForm, setProductionOrderForm] = useState({
     client: "",
+    start: new Date(),
+    deadline: new Date(),
     rooms: [],
   });
 
