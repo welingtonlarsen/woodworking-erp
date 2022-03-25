@@ -10,23 +10,23 @@ import {
 import { Transform, Type } from 'class-transformer';
 // import * as moment from 'moment';
 
-class ClientDTO {
+export class ClientDTO {
   @IsString()
-  readonly name: string;
+  name: string;
 }
 
 export class ProductionOrderDTO {
   @IsObject()
   @Type(() => ClientDTO)
-  readonly client: ClientDTO;
+  client: ClientDTO;
 
   @Transform((date) => new Date(date.value))
   @IsNotEmpty()
-  readonly start: Date
+  start: Date
 
   @Transform((date) => new Date(date.value))
   @IsNotEmpty()
-  readonly deadline: Date
+  deadline: Date
 
   @ValidateNested({ each: true })
   @Type(() => RoomDTO)
