@@ -59,6 +59,7 @@ const forniture: Forniture = new Forniture(
   new Date(),
   room,
 );
+forniture.id = 1;
 
 describe('ProductionOrderService', () => {
   let productionOrderService: ProductionOrderService;
@@ -105,9 +106,9 @@ describe('ProductionOrderService', () => {
       ProductionOrderService,
     );
 
-    repositories = module.get<ProductionOrderRepositoriesFactory>(
-      ProductionOrderRepositoriesFactory,
-    );
+    // repositories = module.get<ProductionOrderRepositoriesFactory>(
+    //   ProductionOrderRepositoriesFactory,
+    // );
 
     clientRepository = module.get<Repository<Client>>(
       getRepositoryToken(Client),
@@ -124,13 +125,13 @@ describe('ProductionOrderService', () => {
   describe('create', () => {
     it('should create a production order', async () => {
       // Act
-      const result = await productionOrderService.create(productionOrderDto);
+      await productionOrderService.create(productionOrderDto);
 
       // Assert
+      expect(fornitureRepository.save).toHaveBeenCalledTimes(1);
       expect(clientRepository.save).toHaveBeenCalledTimes(1);
       expect(productionOrderRepository.save).toHaveBeenCalledTimes(1);
       expect(roomRepository.save).toHaveBeenCalledTimes(1);
-      expect(fornitureRepository.save).toHaveBeenCalledTimes(1);
     });
   });
 

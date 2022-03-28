@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { read } from 'fs';
 import { Repository } from 'typeorm';
 import { Client } from '../model/client.model';
 import { Forniture } from '../model/forniture.model';

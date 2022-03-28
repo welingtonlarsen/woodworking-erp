@@ -24,14 +24,15 @@ export class ProductionOrderService {
           productionOrderDto.deadline,
         ),
       );
-
-    productionOrderDto.rooms.forEach(async (roomDto) => {
+    
+    await Promise.all(productionOrderDto.rooms.map(async (roomDto) => {
       const room = await this.repositories.roomRepository.save(
         new Room(roomDto.name, productionOrder),
       );
+      
 
-      roomDto.fornitures.forEach(async (fornitureDto) => {
-        await this.repositories.fornitureRepository.save(
+      roomDto.fornitures.map(async (fornitureDto) => {
+        const response = await this.repositories.fornitureRepository.save(
           new Forniture(
             fornitureDto.name,
             fornitureDto.productionStart,
@@ -43,7 +44,7 @@ export class ProductionOrderService {
           ),
         );
       });
-    });
+    }));
   }
 
   public async getById(id: number): Promise<ProductionOrder> {
