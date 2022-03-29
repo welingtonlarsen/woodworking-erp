@@ -32,7 +32,7 @@ export class ProductionOrderService {
       
 
       roomDto.fornitures.map(async (fornitureDto) => {
-        const response = await this.repositories.fornitureRepository.save(
+        this.repositories.fornitureRepository.save(
           new Forniture(
             fornitureDto.name,
             fornitureDto.productionStart,
@@ -63,9 +63,9 @@ export class ProductionOrderService {
       });
 
     const productionOrderInfos = productionOrders.map((productionOrder) => {
-      const productionOrderId = productionOrder.id;
-      const clientName = productionOrder.client.name;
-      const ambientsQuantity = productionOrder.rooms.length;
+      const { id: productionOrderId, client, rooms } = productionOrder
+      const { name: clientName } = client;
+      const ambientsQuantity = rooms.length;
 
       const containsPurchaseOrderQuantity = productionOrder.rooms.reduce(
         (containsPurchaseOrderTotalQuantity, room) => {
