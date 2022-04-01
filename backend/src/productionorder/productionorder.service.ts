@@ -12,9 +12,8 @@ export class ProductionOrderService {
   constructor(private repositories: ProductionOrderRepositoriesFactory) {}
 
   public async create(productionOrderDto: ProductionOrderDTO) {
-    const client = await this.repositories.clientRepository.save(
-      new Client(productionOrderDto.client.name),
-    );
+    const clientNotPersisted = this.repositories.clientRepository.create(productionOrderDto.client)
+    const client = await this.repositories.clientRepository.save(clientNotPersisted);
 
     const productionOrder =
       await this.repositories.productionOrderRepository.save(

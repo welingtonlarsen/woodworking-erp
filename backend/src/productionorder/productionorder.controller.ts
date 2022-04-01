@@ -12,10 +12,10 @@ export class ProductionOrderController {
     this.productionOrderService.create(productionOrder);
   }
 
-  @Get()
-  public async getById(@Query('id') productionOrderId: number): Promise<any> {
-    return this.productionOrderService.getById(productionOrderId);
-  }
+  // @Get()
+  // public async getById(@Query('id') productionOrderId: number): Promise<any> {
+  //   return this.productionOrderService.getById(productionOrderId);
+  // }
 
   @Get()
   public async getAll(): Promise<ProductionOrderInfo[]> {

@@ -6,7 +6,7 @@ import { Room } from 'src/productionorder/model/room.model';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'mysql',
-  host: '172.26.0.2',
+  host: 'localhost',
   port: 3306,
   username: 'user',
   password: 'password',

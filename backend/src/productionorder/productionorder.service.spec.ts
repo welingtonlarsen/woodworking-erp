@@ -86,6 +86,7 @@ describe('ProductionOrderService', () => {
           provide: getRepositoryToken(Client),
           useValue: {
             save: jest.fn().mockResolvedValue(clientEntity),
+            create: jest.fn().mockResolvedValue(clientEntity)
           },
         },
         {
