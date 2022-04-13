@@ -22,24 +22,42 @@ export class ProductionOrderDTO {
 
   @Transform((date) => new Date(date.value))
   @IsNotEmpty()
-  start: Date
+  start: Date;
 
   @Transform((date) => new Date(date.value))
   @IsNotEmpty()
-  deadline: Date
+  deadline: Date;
 
   @ValidateNested({ each: true })
   @Type(() => RoomDTO)
   rooms: RoomDTO[];
 }
 
+export class UpdateProductionOrderDTO extends ProductionOrderDTO {
+  @IsNumber()
+  id: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => UpdateRoomDTO)
+  rooms: UpdateRoomDTO[];
+}
+
 export class RoomDTO {
   @IsString()
   name: string;
-  
+
   @ValidateNested({ each: true })
   @Type(() => FornitureDTO)
   fornitures: FornitureDTO[];
+}
+
+export class UpdateRoomDTO extends RoomDTO {
+  @IsNumber()
+  id: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => UpdateFornitureDTO)
+  fornitures: UpdateFornitureDTO[];
 }
 
 export class FornitureDTO {
@@ -63,4 +81,9 @@ export class FornitureDTO {
   @Transform((date) => new Date(date.value))
   @IsNotEmpty()
   deadline: Date;
+}
+
+export class UpdateFornitureDTO extends FornitureDTO {
+  @IsNumber()
+  id: number;
 }

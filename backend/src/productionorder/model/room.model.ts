@@ -16,7 +16,7 @@ export class Room {
   @Column()
   name: string;
 
-  @OneToMany(() => Forniture, (forniture) => forniture.room)
+  @OneToMany(() => Forniture, (forniture) => forniture.room, { cascade: ['insert', 'update'] })
   fornitures: Forniture[];
 
   @ManyToOne(() => ProductionOrder, (productionOrder) => productionOrder.rooms)

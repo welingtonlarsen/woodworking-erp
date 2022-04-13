@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import {
-  ClientDTO,
-  FornitureDTO,
-  ProductionOrderDTO,
-  RoomDTO,
-} from './dto/request/productionorder.dto';
+  clientEntity,
+  date,
+  forniture,
+  productionOrder,
+  productionOrderDto,
+  room,
+} from './dummies/productionorder.dummies';
+import { Repository } from 'typeorm';
 import { ProductionOrderInfo } from './dto/response/productionorderinfo.response.dto';
 import { Client } from './model/client.model';
 import { Forniture } from './model/forniture.model';
@@ -14,60 +16,6 @@ import { ProductionOrder } from './model/productionorder.model';
 import { Room } from './model/room.model';
 import { ProductionOrderService } from './productionorder.service';
 import { ProductionOrderRepositoriesFactory } from './repository/repositoriesfactory.repository';
-
-// Common consts
-const date = new Date();
-
-// Mock DTOs
-const clientDto = new ClientDTO();
-clientDto.name = 'Joseph';
-
-const fornitureDto = new FornitureDTO();
-fornitureDto.containsPurchaseOrder = true;
-fornitureDto.deadline = date;
-fornitureDto.forecast = date;
-fornitureDto.name = 'Table';
-fornitureDto.productionStart = date;
-fornitureDto.woodWorker = 'Wesley';
-
-const roomDto = new RoomDTO();
-roomDto.fornitures = [fornitureDto];
-roomDto.name = 'Kitchen';
-
-const productionOrderDto = new ProductionOrderDTO();
-productionOrderDto.client = clientDto;
-productionOrderDto.deadline = date;
-productionOrderDto.rooms = [roomDto];
-productionOrderDto.start = date;
-
-// Mock Entities
-const clientEntity: Client = new Client('Joseph');
-clientEntity.id = 1;
-
-const productionOrder: ProductionOrder = new ProductionOrder(
-  clientEntity,
-  date,
-  date,
-);
-productionOrder.id = 1;
-
-const room: Room = new Room('bathroom', productionOrder);
-room.id = 1;
-
-const forniture: Forniture = new Forniture(
-  'Table',
-  date,
-  false,
-  date,
-  'Wesley',
-  date,
-  room,
-);
-forniture.id = 1;
-
-// Set relationships
-room.fornitures = [forniture]
-productionOrder.rooms = [room]
 
 describe('ProductionOrderService', () => {
   let productionOrderService: ProductionOrderService;
@@ -86,7 +34,7 @@ describe('ProductionOrderService', () => {
           provide: getRepositoryToken(Client),
           useValue: {
             save: jest.fn().mockResolvedValue(clientEntity),
-            create: jest.fn().mockResolvedValue(clientEntity)
+            create: jest.fn().mockResolvedValue(clientEntity),
           },
         },
         {
@@ -94,7 +42,8 @@ describe('ProductionOrderService', () => {
           useValue: {
             save: jest.fn().mockResolvedValue(productionOrder),
             findByIds: jest.fn().mockResolvedValue([productionOrder]),
-            find: jest.fn().mockResolvedValue([productionOrder])
+            find: jest.fn().mockResolvedValue([productionOrder]),
+            findOneOrFail: jest.fn().mockResolvedValue(productionOrder),
           },
         },
         {
@@ -146,9 +95,9 @@ describe('ProductionOrderService', () => {
       const result = await productionOrderService.getById(1);
 
       // Assert
-      expect(result).toBe(productionOrder)
-    })
-  })
+      expect(result).toBe(productionOrder);
+    });
+  });
 
   describe('getAll', () => {
     it('sould return all production orders', async () => {
@@ -156,7 +105,15 @@ describe('ProductionOrderService', () => {
       const result = await productionOrderService.getAll();
 
       // Assert
-      const expectResult = new ProductionOrderInfo(1, 'Joseph', 1, 1, date.valueOf(), date.valueOf(), 0);
+      const expectResult = new ProductionOrderInfo(
+        1,
+        'Joseph',
+        1,
+        1,
+        date.valueOf(),
+        date.valueOf(),
+        0,
+      );
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(expectResult);
     });
@@ -165,25 +122,35 @@ describe('ProductionOrderService', () => {
       // Arrange
       const fornitureWithPurchaseOrder: Forniture = {
         ...forniture,
-        containsPurchaseOrder: true
-      }
+        containsPurchaseOrder: true,
+      };
       const roomContainingTheForniture: Room = {
         ...room,
-        fornitures: [fornitureWithPurchaseOrder]
-      }
+        fornitures: [fornitureWithPurchaseOrder],
+      };
       const productionOrderContainingTheRoom: ProductionOrder = {
         ...productionOrder,
-        rooms: [roomContainingTheForniture]
-      }
-      jest.spyOn(productionOrderRepository, 'find').mockResolvedValueOnce([productionOrderContainingTheRoom]);
+        rooms: [roomContainingTheForniture],
+      };
+      jest
+        .spyOn(productionOrderRepository, 'find')
+        .mockResolvedValueOnce([productionOrderContainingTheRoom]);
 
       // Act
       const result = await productionOrderService.getAll();
 
       // Assert
-      const expectResult = new ProductionOrderInfo(1, 'Joseph', 1, 1, date.valueOf(), date.valueOf(), 100);
+      const expectResult = new ProductionOrderInfo(
+        1,
+        'Joseph',
+        1,
+        1,
+        date.valueOf(),
+        date.valueOf(),
+        100,
+      );
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(expectResult);
-    })
-  })
+    });
+  });
 });

@@ -1,7 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ProductionOrderInfo } from './dto/response/productionorderinfo.response.dto';
-import { ProductionOrderDTO } from './dto/request/productionorder.dto';
+import {
+  ProductionOrderDTO,
+  UpdateProductionOrderDTO,
+} from './dto/request/productionorder.dto';
 import { ProductionOrderService } from './productionorder.service';
+import { ProductionOrder } from './model/productionorder.model';
 
 @Controller('productionorder')
 export class ProductionOrderController {
@@ -12,13 +16,20 @@ export class ProductionOrderController {
     this.productionOrderService.create(productionOrder);
   }
 
-  // @Get()
-  // public async getById(@Query('id') productionOrderId: number): Promise<any> {
-  //   return this.productionOrderService.getById(productionOrderId);
-  // }
-
   @Get()
   public async getAll(): Promise<ProductionOrderInfo[]> {
     return await this.productionOrderService.getAll();
+  }
+
+  @Get(':id')
+  public async getById(@Param('id') productionOrderId: number): Promise<any> {
+    return this.productionOrderService.getById(productionOrderId);
+  }
+
+  @Put()
+  public async update(
+    @Body() body: UpdateProductionOrderDTO,
+  ): Promise<ProductionOrder> {
+    return this.productionOrderService.update(body);
   }
 }

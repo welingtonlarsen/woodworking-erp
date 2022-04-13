@@ -19,10 +19,10 @@ export class ProductionOrder {
   @Column()
   deadline: Date;
 
-  @ManyToOne(() => Client, (client) => client.productionOrders)
+  @ManyToOne(() => Client, (client) => client.productionOrders, { cascade: ['insert', 'update'] })
   client: Client;
 
-  @OneToMany(() => Room, (room) => room.productionOrder)
+  @OneToMany(() => Room, (room) => room.productionOrder, { cascade: ['insert', 'update'] })
   rooms: Room[];
 
   constructor(client: Client, start: Date, deadline: Date) {

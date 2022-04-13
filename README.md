@@ -1,11 +1,11 @@
 <div align="center">
 
-![](https://img.shields.io/badge/status-working-orange)
+![](https://img.shields.io/badge/status-done-green)
 </div>
 
 <div align="center">
 
-# Woodworking ERP
+# Woodworking ERP - POC
 
 ![](https://img.shields.io/badge/Autor-Welington%20Larsen-brightgreen)
 ![](https://img.shields.io/badge/Framework-ReactJS-brightgreen)
@@ -14,13 +14,8 @@
 </div> 
 
 ## Description
-- todo
+- This project was built to understand some technologies' viability use, which I would like to use in a new project named Woodworking ERP.
 
 ## Local prerequisites
-- todo
-
-## Execution
-- todo
-
-## Examples
-- todo
+- Docker
+- Nodejs

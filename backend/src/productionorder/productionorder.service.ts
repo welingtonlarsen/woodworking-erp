@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductionOrderInfo } from './dto/response/productionorderinfo.response.dto';
 import { Client } from './model/client.model';
 import { Forniture } from './model/forniture.model';
 import { ProductionOrder } from './model/productionorder.model';
 import { Room } from './model/room.model';
-import { ProductionOrderDTO } from './dto/request/productionorder.dto';
+import {
+  ProductionOrderDTO,
+  UpdateProductionOrderDTO,
+} from './dto/request/productionorder.dto';
 import { ProductionOrderRepositoriesFactory } from './repository/repositoriesfactory.repository';
 
 @Injectable()
@@ -12,8 +15,12 @@ export class ProductionOrderService {
   constructor(private repositories: ProductionOrderRepositoriesFactory) {}
 
   public async create(productionOrderDto: ProductionOrderDTO) {
-    const clientNotPersisted = this.repositories.clientRepository.create(productionOrderDto.client)
-    const client = await this.repositories.clientRepository.save(clientNotPersisted);
+    const clientNotPersisted = this.repositories.clientRepository.create(
+      productionOrderDto.client,
+    );
+    const client = await this.repositories.clientRepository.save(
+      clientNotPersisted,
+    );
 
     const productionOrder =
       await this.repositories.productionOrderRepository.save(
@@ -23,36 +30,41 @@ export class ProductionOrderService {
           productionOrderDto.deadline,
         ),
       );
-    
-    await Promise.all(productionOrderDto.rooms.map(async (roomDto) => {
-      const room = await this.repositories.roomRepository.save(
-        new Room(roomDto.name, productionOrder),
-      );
-      
 
-      roomDto.fornitures.map(async (fornitureDto) => {
-        this.repositories.fornitureRepository.save(
-          new Forniture(
-            fornitureDto.name,
-            fornitureDto.productionStart,
-            fornitureDto.containsPurchaseOrder,
-            fornitureDto.forecast,
-            fornitureDto.woodWorker,
-            fornitureDto.deadline,
-            room,
-          ),
+    await Promise.all(
+      productionOrderDto.rooms.map(async (roomDto) => {
+        const room = await this.repositories.roomRepository.save(
+          new Room(roomDto.name, productionOrder),
         );
-      });
-    }));
+
+        roomDto.fornitures.map(async (fornitureDto) => {
+          this.repositories.fornitureRepository.save(
+            new Forniture(
+              fornitureDto.name,
+              fornitureDto.productionStart,
+              fornitureDto.containsPurchaseOrder,
+              fornitureDto.forecast,
+              fornitureDto.woodWorker,
+              fornitureDto.deadline,
+              room,
+            ),
+          );
+        });
+      }),
+    );
   }
 
   public async getById(id: number): Promise<ProductionOrder> {
-    const productionOrder =
-      await this.repositories.productionOrderRepository.findByIds([id], {
-        relations: ['client', 'rooms', 'rooms.fornitures'],
-      });
-
-    return productionOrder[0];
+    try {
+      return await this.repositories.productionOrderRepository.findOneOrFail(
+        id,
+        {
+          relations: ['client', 'rooms', 'rooms.fornitures'],
+        },
+      );
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
   public async getAll(): Promise<ProductionOrderInfo[]> {
@@ -62,7 +74,7 @@ export class ProductionOrderService {
       });
 
     const productionOrderInfos = productionOrders.map((productionOrder) => {
-      const { id: productionOrderId, client, rooms } = productionOrder
+      const { id: productionOrderId, client, rooms } = productionOrder;
       const { name: clientName } = client;
       const ambientsQuantity = rooms.length;
 
@@ -116,5 +128,13 @@ export class ProductionOrderService {
   ): number {
     if (containsPurchaseOrderQuantity == 0 || fornituresQuantity == 0) return 0;
     return (containsPurchaseOrderQuantity / fornituresQuantity) * 100;
+  }
+
+  async update(data: UpdateProductionOrderDTO): Promise<ProductionOrder> {
+    const productionOrder = await this.getById(data.id);
+    this.repositories.productionOrderRepository.merge(productionOrder, data);
+    return await this.repositories.productionOrderRepository.save(
+      productionOrder,
+    );
   }
 }
