@@ -14,7 +14,7 @@
 </div> 
 
 ## Description
-- This project was built to understand some technologies' viability use, which I would like to use in a new project named Woodworking ERP.
+- This project was built to understand some technologies' viability which I would like to use in a new project named Woodworking ERP.
 
 ## Local prerequisites
 - Docker
